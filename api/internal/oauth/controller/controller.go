@@ -19,7 +19,7 @@ type controller struct {
 	spotifyUtil spotify.SpotifyUtil
 }
 
-func NewOauthController(group fiber.Router, config *config.Config, service oauth.Usecase, spotifyUtil spotify.SpotifyUtil) {
+func NewController(group fiber.Router, config *config.Config, service oauth.Usecase, spotifyUtil spotify.SpotifyUtil) {
 	c := controller{config: config, service: service, spotifyUtil: spotifyUtil}
 	group.Get("/login", c.Login)
 	group.Get("/callback", c.Callback)
@@ -60,7 +60,7 @@ func (c *controller) Callback(ctx *fiber.Ctx) error {
 	code := m["code"]
 	tokens, err := c.service.Callback(context, code)
 	if err != nil {
-		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
+		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
 			slog.Warn("spotify error: ", spotifyErr.ErrorDescription)
 			params.Set("err", spotifyErr.ErrorCode)
 			u.RawQuery = params.Encode()
@@ -95,7 +95,7 @@ func (c *controller) RefreshToken(ctx *fiber.Ctx) error {
 
 	tokens, err := c.service.RefreshToken(context, refreshToken)
 	if err != nil {
-		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
+		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
 			slog.Warn("spotify error: ", spotifyErr.ErrorDescription)
 			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 				"error":   spotifyErr.ErrorCode,
@@ -110,6 +110,7 @@ func (c *controller) RefreshToken(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
-		"data": tokens,
+		"message": "refresh token success",
+		"data":    tokens,
 	})
 }

@@ -7,6 +7,21 @@ const (
 	SpotifyBaseAPIURL    = "https://api.spotify.com/v1"
 )
 
+type SpotifyUser struct {
+	ID          string            `json:"id"`
+	DisplayName string            `json:"display_name"`
+	Images      []SpotifyImageURL `json:"images"`
+	ProfileURL  string            `json:"href"`
+	Email       string            `json:"email"`
+	Country     string            `jon:"country"`
+}
+
+type SpotifyImageURL struct {
+	URL    string `json:"url"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+}
+
 type SpotifyAccessTokens struct {
 	AccessToken  string `json:"access_token"`
 	TokenType    string `json:"token_type"`
@@ -22,11 +37,24 @@ type SpotifyRefreshTokens struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-type SpotifyError struct {
+type SpotifyOauthError struct {
 	ErrorCode        string `json:"error"`
 	ErrorDescription string `json:"error_description"`
 }
 
-func (e *SpotifyError) Error() string {
+func (e *SpotifyOauthError) Error() string {
 	return fmt.Sprintf("Error %v : %v", e.ErrorCode, e.ErrorDescription)
+}
+
+type SpotifyError struct {
+	ErrorDetail SpotifyErrorDetail `json:"error"`
+}
+
+type SpotifyErrorDetail struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+func (e *SpotifyError) Error() string {
+	return fmt.Sprintf("Error %v", e.ErrorDetail.Message)
 }

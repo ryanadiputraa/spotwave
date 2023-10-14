@@ -15,7 +15,7 @@ type service struct {
 	spotifyUtil spotify.SpotifyUtil
 }
 
-func NewOauthService(config *config.Config, spotifyUtil spotify.SpotifyUtil) oauth.Usecase {
+func NewService(config *config.Config, spotifyUtil spotify.SpotifyUtil) oauth.Usecase {
 	return &service{
 		config:      config,
 		spotifyUtil: spotifyUtil,
