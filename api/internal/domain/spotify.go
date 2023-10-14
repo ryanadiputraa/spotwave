@@ -4,3 +4,11 @@ const (
 	SpotifyAccountAPIURL = "https://accounts.spotify.com"
 	SpotifyBaseAPIURL    = "https://api.spotify.com/v1"
 )
+
+type SpotifyAccessTokens struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	Scope        string `json:"scope"`
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken int    `json:"refresh_token"`
+}
