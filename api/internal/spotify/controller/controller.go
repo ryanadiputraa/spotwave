@@ -31,13 +31,13 @@ func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
 	user, err := c.service.GetUserInfo(context, accessToken)
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
-			slog.Warn("spotify error: ", spotifyErr.ErrorDescription)
+			slog.Warn("spotify error: " + spotifyErr.ErrorDescription)
 			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 				"error":   spotifyErr.ErrorCode,
 				"message": spotifyErr.ErrorDescription,
 			})
 		}
-		slog.Warn("fail to get user info: ", err)
+		slog.Warn("fail to get user info: " + err.Error())
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error":   domain.ErrBadRequest,
 			"message": "fail to get user info",

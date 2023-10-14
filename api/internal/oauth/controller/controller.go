@@ -51,7 +51,7 @@ func (c *controller) Callback(ctx *fiber.Ctx) error {
 
 	error := m["error"]
 	if error != "" {
-		slog.Warn("oath callback: ", error)
+		slog.Warn("oath callback: " + error)
 		params.Set("err", error)
 		u.RawQuery = params.Encode()
 		return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
@@ -61,12 +61,12 @@ func (c *controller) Callback(ctx *fiber.Ctx) error {
 	tokens, err := c.service.Callback(context, code)
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
-			slog.Warn("spotify error: ", spotifyErr.ErrorDescription)
+			slog.Warn("spotify error: " + spotifyErr.ErrorDescription)
 			params.Set("err", spotifyErr.ErrorCode)
 			u.RawQuery = params.Encode()
 			return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
 		}
-		slog.Warn("oath get spotify access token: ", err)
+		slog.Warn("oath get spotify access token: " + err.Error())
 		params.Set("err", domain.ErrBadRequest)
 		u.RawQuery = params.Encode()
 		return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
@@ -96,13 +96,13 @@ func (c *controller) RefreshToken(ctx *fiber.Ctx) error {
 	tokens, err := c.service.RefreshToken(context, refreshToken)
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
-			slog.Warn("spotify error: ", spotifyErr.ErrorDescription)
+			slog.Warn("spotify error: " + spotifyErr.ErrorDescription)
 			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 				"error":   spotifyErr.ErrorCode,
 				"message": spotifyErr.ErrorDescription,
 			})
 		}
-		slog.Warn("fail to refresh token: ", err)
+		slog.Warn("fail to refresh token: " + err.Error())
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error":   http.StatusBadRequest,
 			"message": "fail to refresh access token",

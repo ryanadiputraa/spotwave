@@ -54,7 +54,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(data.Encode()))
 	if err != nil {
-		slog.Error("http req: ", err)
+		slog.Error("http req: ", err.Error())
 		return
 	}
 	req.Header.Set("Authorization", "basic "+base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%v:%v", clientID, clientSecret))))
@@ -62,7 +62,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Error("exec http client: ", err)
+		slog.Error("exec http client: ", err.Error())
 		return
 	}
 	defer resp.Body.Close()
@@ -70,7 +70,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	if resp.StatusCode != http.StatusOK {
 		var reqErr domain.SpotifyOauthError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
-			slog.Error("decode resp body: ", err)
+			slog.Error("decode resp body: ", err.Error())
 			return
 		}
 		return tokens, &reqErr
@@ -78,7 +78,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 
 	err = json.NewDecoder(resp.Body).Decode(&tokens)
 	if err != nil {
-		slog.Error("decode: ", err)
+		slog.Error("decode: ", err.Error())
 	}
 	return
 }
@@ -94,7 +94,7 @@ func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tok
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(data.Encode()))
 	if err != nil {
-		slog.Error("http req: ", err)
+		slog.Error("http req: ", err.Error())
 		return
 	}
 	req.Header.Set("Authorization", "basic "+base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%v:%v", clientID, clientSecret))))
@@ -102,7 +102,7 @@ func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tok
 
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Error("exec http client: ", err)
+		slog.Error("exec http client: ", err.Error())
 		return
 	}
 	defer resp.Body.Close()
@@ -110,7 +110,7 @@ func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tok
 	if resp.StatusCode != http.StatusOK {
 		var reqErr domain.SpotifyOauthError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
-			slog.Error("decode resp body: ", err)
+			slog.Error("decode resp body: ", err.Error())
 			return
 		}
 		return tokens, &reqErr
@@ -118,7 +118,7 @@ func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tok
 
 	err = json.NewDecoder(resp.Body).Decode(&tokens)
 	if err != nil {
-		slog.Error("decode: ", err)
+		slog.Error("decode: ", err.Error())
 	}
 	return
 }
@@ -129,14 +129,14 @@ func (s *spotify) GetUserInfo(accessToken string) (user domain.SpotifyUser, err 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		slog.Error("http req: ", err)
+		slog.Error("http req: ", err.Error())
 		return
 	}
 	req.Header.Set("Authorization", accessToken)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Error("exec http req: ", err)
+		slog.Error("exec http req: ", err.Error())
 		return
 	}
 	defer resp.Body.Close()
@@ -144,7 +144,7 @@ func (s *spotify) GetUserInfo(accessToken string) (user domain.SpotifyUser, err 
 	if resp.StatusCode != http.StatusOK {
 		var reqErr domain.SpotifyError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
-			slog.Error("decode resp body: ", err)
+			slog.Error("decode resp body: ", err.Error())
 			return
 		}
 		return user, &reqErr
@@ -152,7 +152,7 @@ func (s *spotify) GetUserInfo(accessToken string) (user domain.SpotifyUser, err 
 
 	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
-		slog.Error("decode: ", err)
+		slog.Error("decode: ", err.Error())
 	}
 	return
 }
