@@ -10,5 +10,5 @@ type SpotifyAccessTokens struct {
 	TokenType    string `json:"token_type"`
 	Scope        string `json:"scope"`
 	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken int    `json:"refresh_token"`
+	RefreshToken string `json:"refresh_token"`
 }

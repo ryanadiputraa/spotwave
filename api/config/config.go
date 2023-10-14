@@ -10,13 +10,15 @@ type Config struct {
 }
 
 type Server struct {
-	Port string `mapstructure:"PORT"`
+	Port   string `mapstructure:"PORT"`
+	WebURL string `mapstructure:"webUrl"`
 }
 
 type Spotify struct {
-	ClientID    string `mapstrcture:"cliendId"`
-	State       string `mapstrcture:"state"`
-	RedirectURI string `mapstrcture:"redirectUri"`
+	ClientID     string `mapstrcture:"clientId"`
+	ClientSecret string `mapstrcture:"clientSecret"`
+	State        string `mapstrcture:"state"`
+	RedirectURI  string `mapstrcture:"redirectUri"`
 }
 
 func LoadConfig(path string) (config *Config, err error) {

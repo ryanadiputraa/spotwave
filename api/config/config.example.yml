@@ -1,7 +1,9 @@
 server:
   port: ':8080'
+  webUrl: 'http://localhost:3000'
 
 spotify:
   clientId: ''
+  clientSecret: ''
   state: ''
   redirectUri: 'http://localhost:8080/oauth/callback'
