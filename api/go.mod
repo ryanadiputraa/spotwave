@@ -1,8 +1,11 @@
 module github.com/ryanadiputraa/spotwave/api
 
-go 1.21.2
+go 1.21.3
 
-require github.com/gofiber/fiber/v2 v2.49.2
+require (
+	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/sagikazarmark/slog-shim v0.1.0
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -11,7 +14,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
-	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect

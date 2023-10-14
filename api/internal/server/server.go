@@ -18,5 +18,6 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (s *Server) Run() error {
+	s.mapHandlers()
 	return s.fiber.Listen(s.config.Port)
 }

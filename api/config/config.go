@@ -6,10 +6,17 @@ import (
 
 type Config struct {
 	*Server
+	*Spotify
 }
 
 type Server struct {
 	Port string `mapstructure:"PORT"`
+}
+
+type Spotify struct {
+	ClientID    string `mapstrcture:"cliendId"`
+	State       string `mapstrcture:"state"`
+	RedirectURI string `mapstrcture:"redirectUri"`
 }
 
 func LoadConfig(path string) (config *Config, err error) {

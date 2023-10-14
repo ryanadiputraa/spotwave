@@ -3,3 +3,5 @@ server:
 
 spotify:
   clientId: ''
+  state: ''
+  redirectUri: 'http://localhost:8080/oauth/callback'
