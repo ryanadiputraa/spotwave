@@ -23,6 +23,7 @@ func NewOauthController(group fiber.Router, config *config.Config, service oauth
 	c := controller{config: config, service: service, spotifyUtil: spotifyUtil}
 	group.Get("/login", c.Login)
 	group.Get("/callback", c.Callback)
+	group.Get("/refresh_token", c.RefreshToken)
 }
 
 func (c *controller) Login(ctx *fiber.Ctx) error {
@@ -34,6 +35,7 @@ func (c *controller) Login(ctx *fiber.Ctx) error {
 }
 
 func (c *controller) Callback(ctx *fiber.Ctx) error {
+	context := ctx.Context()
 	m := ctx.Queries()
 	u, _ := url.ParseRequestURI(c.config.WebURL)
 	u.Path = "/auth"
@@ -56,7 +58,7 @@ func (c *controller) Callback(ctx *fiber.Ctx) error {
 	}
 
 	code := m["code"]
-	tokens, err := c.service.Callback(code)
+	tokens, err := c.service.Callback(context, code)
 	if err != nil {
 		if spotifyErr, ok := err.(*spotify.AccessTokenReqErrResponse); ok {
 			slog.Warn("oath get spotify access token: ", spotifyErr.ErrorDescription)
@@ -77,4 +79,35 @@ func (c *controller) Callback(ctx *fiber.Ctx) error {
 	u.RawQuery = params.Encode()
 
 	return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
+}
+
+func (c *controller) RefreshToken(ctx *fiber.Ctx) error {
+	context := ctx.Context()
+	m := ctx.Queries()
+
+	refreshToken := m["token"]
+	if refreshToken == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   domain.ErrBadRequest,
+			"message": "missing 'token' param",
+		})
+	}
+
+	tokens, err := c.service.RefreshToken(context, refreshToken)
+	if err != nil {
+		if spotifyErr, ok := err.(*spotify.AccessTokenReqErrResponse); ok {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+				"error":   spotifyErr.ErrorCode,
+				"message": spotifyErr.ErrorDescription,
+			})
+		}
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   http.StatusBadRequest,
+			"message": "fail to refresh access token",
+		})
+	}
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"data": tokens,
+	})
 }

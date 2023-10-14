@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"net/url"
 
 	"github.com/ryanadiputraa/spotwave/api/config"
@@ -21,7 +22,11 @@ func NewOauthService(config *config.Config, spotifyUtil spotify.SpotifyUtil) oau
 	}
 }
 
-func (s *service) Callback(code string) (domain.SpotifyAccessTokens, error) {
+func (s *service) Callback(ctx context.Context, code string) (domain.SpotifyAccessTokens, error) {
 	redirect, _ := url.ParseRequestURI(s.config.RedirectURI)
 	return s.spotifyUtil.Callback(s.config.ClientID, s.config.ClientSecret, code, redirect.String())
+}
+
+func (s *service) RefreshToken(ctx context.Context, refreshToken string) (domain.SpotifyRefreshTokens, error) {
+	return s.spotifyUtil.RefreshToken(s.config.ClientID, s.config.ClientSecret, refreshToken)
 }

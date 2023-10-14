@@ -1,7 +1,12 @@
 package oauth
 
-import "github.com/ryanadiputraa/spotwave/api/internal/domain"
+import (
+	"context"
+
+	"github.com/ryanadiputraa/spotwave/api/internal/domain"
+)
 
 type Usecase interface {
-	Callback(code string) (domain.SpotifyAccessTokens, error)
+	Callback(ctx context.Context, code string) (domain.SpotifyAccessTokens, error)
+	RefreshToken(ctx context.Context, refreshToken string) (domain.SpotifyRefreshTokens, error)
 }

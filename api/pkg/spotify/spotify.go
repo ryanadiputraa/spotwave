@@ -15,6 +15,7 @@ import (
 type SpotifyUtil interface {
 	Login(ctx *fiber.Ctx, clientID, redirectURI, state string) error
 	Callback(clientID, clientSecret, code, redirectURI string) (domain.SpotifyAccessTokens, error)
+	RefreshToken(clientID, clientSecret, refreshToken string) (domain.SpotifyRefreshTokens, error)
 }
 
 type spotify struct{}
@@ -55,6 +56,40 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	data.Set("code", code)
 	data.Set("redirect_uri", redirectURI)
 	data.Set("grant_type", "authorization_code")
+
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(data.Encode()))
+	if err != nil {
+		return
+	}
+	req.Header.Set("Authorization", "basic "+base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%v:%v", clientID, clientSecret))))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var reqErr AccessTokenReqErrResponse
+		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
+			return
+		}
+		return tokens, &reqErr
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&tokens)
+	return
+}
+
+func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tokens domain.SpotifyRefreshTokens, err error) {
+	u, _ := url.ParseRequestURI(domain.SpotifyAccountAPIURL)
+	u.Path = "/api/token"
+
+	data := url.Values{}
+	data.Set("refresh_token", refreshToken)
+	data.Set("grant_type", "refresh_token")
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(data.Encode()))
