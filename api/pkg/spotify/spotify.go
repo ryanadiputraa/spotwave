@@ -19,14 +19,6 @@ type SpotifyUtil interface {
 }
 
 type spotify struct{}
-type AccessTokenReqErrResponse struct {
-	ErrorCode        string `json:"error"`
-	ErrorDescription string `json:"error_description"`
-}
-
-func (e *AccessTokenReqErrResponse) Error() string {
-	return fmt.Sprintf("Error %v : %v", e.ErrorCode, e.ErrorDescription)
-}
 
 func NewSpotifyUtil() SpotifyUtil {
 	return &spotify{}
@@ -72,7 +64,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var reqErr AccessTokenReqErrResponse
+		var reqErr domain.SpotifyError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
 			return
 		}
@@ -106,7 +98,7 @@ func (s *spotify) RefreshToken(clientID, clientSecret, refreshToken string) (tok
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var reqErr AccessTokenReqErrResponse
+		var reqErr domain.SpotifyError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
 			return
 		}
