@@ -25,12 +25,20 @@ type AccessTokenDTO struct {
 	GrantType   string `json:"grant_type"`
 }
 
+type AccessTokenReqErrResponse struct {
+	ErrorCode        string `json:"error"`
+	ErrorDescription string `json:"error_description"`
+}
+
+func (e *AccessTokenReqErrResponse) Error() string {
+	return fmt.Sprintf("Error %v : %v", e.ErrorCode, e.ErrorDescription)
+}
+
 func NewSpotifyUtil() SpotifyUtil {
 	return &spotify{}
 }
 
 func (s *spotify) Login(ctx *fiber.Ctx, clientID, redirectURI, state string) error {
-	resource := "/authorize"
 	params := url.Values{}
 	params.Add("response_type", "code")
 	params.Add("client_id", clientID)
@@ -40,16 +48,15 @@ func (s *spotify) Login(ctx *fiber.Ctx, clientID, redirectURI, state string) err
 	params.Add("show_dialog", "true")
 
 	u, _ := url.ParseRequestURI(domain.SpotifyAccountAPIURL)
-	u.Path = resource
+	u.Path = "/authorize"
 	u.RawQuery = params.Encode()
 
 	return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
 }
 
 func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (tokens domain.SpotifyAccessTokens, err error) {
-	recourse := "/api/token"
 	u, _ := url.ParseRequestURI(domain.SpotifyAccountAPIURL)
-	u.Path = recourse
+	u.Path = "/api/token"
 
 	dto := AccessTokenDTO{
 		Code:        code,
@@ -66,7 +73,7 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	if err != nil {
 		return
 	}
-	req.Header.Set("Authorization", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%v:%v", clientID, clientSecret))))
+	req.Header.Set("Authorization", "basic "+base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%v:%v", clientID, clientSecret))))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
@@ -74,6 +81,14 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var reqErr AccessTokenReqErrResponse
+		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
+			return
+		}
+		return tokens, &reqErr
+	}
 
 	err = json.NewDecoder(resp.Body).Decode(&tokens)
 	return
