@@ -1,12 +1,12 @@
 package spotify
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ryanadiputraa/spotwave/api/internal/domain"
@@ -18,13 +18,6 @@ type SpotifyUtil interface {
 }
 
 type spotify struct{}
-
-type AccessTokenDTO struct {
-	Code        string `json:"code"`
-	RedirectURI string `json:"redirect_uri"`
-	GrantType   string `json:"grant_type"`
-}
-
 type AccessTokenReqErrResponse struct {
 	ErrorCode        string `json:"error"`
 	ErrorDescription string `json:"error_description"`
@@ -58,18 +51,13 @@ func (s *spotify) Callback(clientID, clientSecret, code, redirectURI string) (to
 	u, _ := url.ParseRequestURI(domain.SpotifyAccountAPIURL)
 	u.Path = "/api/token"
 
-	dto := AccessTokenDTO{
-		Code:        code,
-		RedirectURI: redirectURI,
-		GrantType:   "authorization_code",
-	}
-	body, err := json.Marshal(dto)
-	if err != nil {
-		return
-	}
+	data := url.Values{}
+	data.Set("code", code)
+	data.Set("redirect_uri", redirectURI)
+	data.Set("grant_type", "authorization_code")
 
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(body))
+	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return
 	}
