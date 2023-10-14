@@ -17,12 +17,13 @@ type controller struct {
 func NewOauthController(group fiber.Router, config *config.Config) {
 	c := controller{config: config}
 	group.Get("/login", c.Login)
+	group.Get("/callback", c.Callback)
 }
 
 func (c *controller) Login(ctx *fiber.Ctx) error {
-	clientID := c.config.Spotify.ClientID
-	state := c.config.Spotify.State
-	redirectURI, _ := url.ParseRequestURI(c.config.Spotify.RedirectURI)
+	clientID := c.config.ClientID
+	state := c.config.State
+	redirectURI, _ := url.ParseRequestURI(c.config.RedirectURI)
 	slog.Info(redirectURI.String())
 
 	resource := "/authorize"
@@ -38,4 +39,31 @@ func (c *controller) Login(ctx *fiber.Ctx) error {
 	u.RawQuery = params.Encode()
 
 	return ctx.Redirect(u.String(), http.StatusTemporaryRedirect)
+}
+
+func (c *controller) Callback(ctx *fiber.Ctx) error {
+	m := ctx.Queries()
+
+	state := m["state"]
+	if state != c.config.State {
+		slog.Warn("oath callback: invalid state param")
+		return ctx.Status(http.StatusForbidden).JSON(fiber.Map{
+			"err_code": domain.ErrForbidden,
+			"message":  "invalid state param",
+		})
+	}
+
+	error := m["error"]
+	if error != "" {
+		slog.Warn("oath callback: ", error)
+		return ctx.Status(http.StatusForbidden).JSON(fiber.Map{
+			"err_code": error,
+			"message":  "fail to login",
+		})
+	}
+
+	code := m["code"]
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"code": code,
+	})
 }
