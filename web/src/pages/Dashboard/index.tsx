@@ -2,19 +2,16 @@ import { useContext, useEffect } from 'react';
 
 import { AppBar } from './components/AppBar';
 import { AppContext } from '../../context';
-import { getUserInfo } from '../../context/actions/main';
+import { useMainAction } from '../../context/actions/main';
 
 const Dashboard = () => {
-	const { main, mainDispatch } = useContext(AppContext);
+	const { main } = useContext(AppContext);
+	const { getUserInfo } = useMainAction();
 
 	useEffect(() => {
 		if (main.user) return;
-		const fetchUser = async () => {
-			const user = await getUserInfo();
-			mainDispatch({ type: 'SET_USER', payload: user });
-		};
-		fetchUser();
-	}, []);
+		getUserInfo();
+	}, [main.user]);
 
 	return (
 		<div>

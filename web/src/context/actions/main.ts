@@ -1,27 +1,34 @@
-import Cookies from 'universal-cookie';
+import { useContext } from 'react';
 
-import { AccessTokens } from '../../types/tokens';
+import { AppContext } from '..';
 import { User } from '../../types/user';
 import { SuccessResponse } from '../../types/api';
+import { BASE_API_URL, getAccessTokens } from '../../utils';
 
-export const getAccessTokens = (): AccessTokens => {
-	const cookies = new Cookies();
-	return cookies.get<AccessTokens>('auth');
-};
+export const useMainAction = () => {
+	const { mainDispatch } = useContext(AppContext);
 
-export const getUserInfo = async (): Promise<User | null> => {
-	const tokens = getAccessTokens();
-	try {
-		const resp = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/spotify/user`, {
-			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`,
-			},
-		});
-		const json: SuccessResponse<User> = await resp.json();
-		return json.data;
-	} catch (error) {
-		// TODO: catch toast error
-		console.error(error);
-		return null;
-	}
+	const getUserInfo = async (): Promise<void> => {
+		const tokens = getAccessTokens();
+		if (!tokens) {
+			window.location.href = `${BASE_API_URL}/oauth/login`;
+			return;
+		}
+		try {
+			const resp = await fetch(`${BASE_API_URL}/api/spotify/user`, {
+				headers: {
+					Authorization: `Bearer ${tokens.accessToken}`,
+				},
+			});
+			const json: SuccessResponse<User> = await resp.json();
+			mainDispatch({ type: 'SET_USER', payload: json.data });
+		} catch (error) {
+			// TODO: catch toast error
+			console.error(error);
+		}
+	};
+
+	return {
+		getUserInfo,
+	};
 };
