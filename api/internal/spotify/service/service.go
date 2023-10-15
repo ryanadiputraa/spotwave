@@ -24,3 +24,7 @@ func NewService(config *config.Config, spotifyUtil spotifyUtil.SpotifyUtil) spot
 func (s *service) GetUserInfo(ctx context.Context, accessToken string) (domain.SpotifyUser, error) {
 	return s.spotifyUtil.GetUserInfo(accessToken)
 }
+
+func (s *service) GetUserPlaylists(ctx context.Context, accessToken, userID string) (domain.SpotifyPlaylists, error) {
+	return s.spotifyUtil.GetUserPlaylist(accessToken, userID)
+}
