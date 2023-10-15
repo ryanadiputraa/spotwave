@@ -6,9 +6,10 @@ interface Props {
 	children: React.ReactNode;
 	variant?: Variants;
 	classNames?: string;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
 }
 
-export const Button = ({ children, variant = 'primary', classNames }: Props) => {
+export const Button = ({ children, variant = 'primary', classNames, onClick = () => {} }: Props) => {
 	const [classVariants, setClassVariants] = useState('');
 
 	useEffect(() => {
@@ -26,5 +27,9 @@ export const Button = ({ children, variant = 'primary', classNames }: Props) => 
 		}
 	}, []);
 
-	return <button className={`px-4 py-1 rounded-md active:scale-95 ${classVariants} ${classNames}`}>{children}</button>;
+	return (
+		<button className={`px-4 py-2 rounded-md active:scale-95 ${classVariants} ${classNames}`} onClick={onClick}>
+			{children}
+		</button>
+	);
 };

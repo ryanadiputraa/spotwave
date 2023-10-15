@@ -142,7 +142,7 @@ func (s *spotify) GetUserInfo(accessToken string) (user domain.SpotifyUser, err 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var reqErr domain.SpotifyError
+		var reqErr domain.SpotifyOauthError
 		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
 			slog.Error("decode resp body: ", err.Error())
 			return
