@@ -20,7 +20,7 @@ func NewController(group fiber.Router, config *config.Config, service spotify.Us
 		config:  config,
 		service: service,
 	}
-	group.Get("/user", c.GetUserInfo)
+	group.Get("/users", c.GetUserInfo)
 }
 
 func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
@@ -30,11 +30,11 @@ func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
 
 	user, err := c.service.GetUserInfo(context, accessToken)
 	if err != nil {
-		if spotifyErr, ok := err.(*domain.SpotifyOauthError); ok {
-			slog.Warn("spotify error: " + spotifyErr.ErrorDescription)
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-				"error":   spotifyErr.ErrorCode,
-				"message": spotifyErr.ErrorDescription,
+		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
+			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)
+			return ctx.Status(spotifyErr.ErrorDetail.Status).JSON(fiber.Map{
+				"error":   domain.ErrUnauthorized,
+				"message": spotifyErr.ErrorDetail.Message,
 			})
 		}
 		slog.Warn("fail to get user info: " + err.Error())
