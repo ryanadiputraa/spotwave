@@ -13,7 +13,7 @@ type SpotifyUser struct {
 	Images      []SpotifyImageURL `json:"images"`
 	ProfileURL  string            `json:"href"`
 	Email       string            `json:"email"`
-	Country     string            `jon:"country"`
+	Country     string            `json:"country"`
 }
 
 type SpotifyImageURL struct {
