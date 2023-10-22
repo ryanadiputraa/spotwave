@@ -16,7 +16,7 @@ const Home = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-cyan-100 to-accent">
+		<div className="min-h-screen bg-gradient-to-br from-white to-accent">
 			<header className="flex items-center justify-between py-2 px-[2%] sm:px-6">
 				<a className="flex items-center justify-center gap-2" href="#main">
 					<img className="w-10" src="/logo.svg" alt="spotwave-logo" />

@@ -17,7 +17,7 @@ export const AppBar = () => {
 			</Link>
 			<div className="flex items-center justify-center gap-2">
 				<img className="w-10 rounded-full" src={profileImage} alt="spotwave-logo" />
-				<div className="flex flex-col items-start justify-center">
+				<div className="hidden sm:flex flex-col items-start justify-center">
 					<span className="font-bold">{displayName}</span>
 					<span className="font-light text-sm">{email}</span>
 				</div>
