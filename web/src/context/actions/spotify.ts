@@ -8,14 +8,14 @@ import { Playlists } from '../../types/spotify';
 export const useSpotifyAction = () => {
 	const { spotifyDispatch } = useContext(AppContext);
 
-	const getUserPlaylists = async (userId: string): Promise<void> => {
+	const getUserPlaylists = async (): Promise<void> => {
 		const tokens = getAccessTokens();
 		if (!tokens) {
 			window.location.href = `${BASE_API_URL}/oauth/login`;
 			return;
 		}
 		try {
-			const resp = await fetch(`${BASE_API_URL}/api/spotify/playlists?user_id=${userId}`, {
+			const resp = await fetch(`${BASE_API_URL}/api/spotify/playlists`, {
 				headers: {
 					Authorization: `Bearer ${tokens.accessToken}`,
 				},

@@ -8,5 +8,5 @@ import (
 
 type Usecase interface {
 	GetUserInfo(ctx context.Context, accessToken string) (domain.SpotifyUser, error)
-	GetUserPlaylists(ctx context.Context, accessToken, userID string) (domain.SpotifyPlaylists, error)
+	GetUserPlaylists(ctx context.Context, accessToken string) (domain.SpotifyPlaylists, error)
 }

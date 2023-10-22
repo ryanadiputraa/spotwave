@@ -14,9 +14,9 @@ const Dashboard = () => {
 	useEffect(() => {
 		if (!main.user) {
 			getUserInfo();
+			getUserPlaylists();
 			return;
 		}
-		getUserPlaylists(main.user.id);
 	}, [main.user]);
 
 	return (

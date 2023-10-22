@@ -25,6 +25,6 @@ func (s *service) GetUserInfo(ctx context.Context, accessToken string) (domain.S
 	return s.spotifyUtil.GetUserInfo(accessToken)
 }
 
-func (s *service) GetUserPlaylists(ctx context.Context, accessToken, userID string) (domain.SpotifyPlaylists, error) {
-	return s.spotifyUtil.GetUserPlaylist(accessToken, userID)
+func (s *service) GetUserPlaylists(ctx context.Context, accessToken string) (domain.SpotifyPlaylists, error) {
+	return s.spotifyUtil.GetUserPlaylist(accessToken)
 }

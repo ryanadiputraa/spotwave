@@ -55,17 +55,8 @@ func (c *controller) GetUserPlaylists(ctx *fiber.Ctx) error {
 	context := ctx.Context()
 	headers := ctx.GetReqHeaders()
 	accessToken := headers["Authorization"]
-	m := ctx.Queries()
-	userID := m["user_id"]
 
-	if userID == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error":   domain.ErrBadRequest,
-			"message": "missing 'user_id' param",
-		})
-	}
-
-	user, err := c.service.GetUserPlaylists(context, accessToken, userID)
+	user, err := c.service.GetUserPlaylists(context, accessToken)
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
 			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)

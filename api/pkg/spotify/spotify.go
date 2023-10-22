@@ -18,7 +18,7 @@ type SpotifyUtil interface {
 	Callback(clientID, clientSecret, code, redirectURI string) (domain.SpotifyAccessTokens, error)
 	RefreshToken(clientID, clientSecret, refreshToken string) (domain.SpotifyRefreshTokens, error)
 	GetUserInfo(accessToken string) (domain.SpotifyUser, error)
-	GetUserPlaylist(accessToken, userID string) (playlists domain.SpotifyPlaylists, err error)
+	GetUserPlaylist(accessToken string) (playlists domain.SpotifyPlaylists, err error)
 }
 
 type spotify struct{}
@@ -158,8 +158,8 @@ func (s *spotify) GetUserInfo(accessToken string) (user domain.SpotifyUser, err 
 	return
 }
 
-func (s *spotify) GetUserPlaylist(accessToken, userID string) (playlists domain.SpotifyPlaylists, err error) {
-	u, _ := url.ParseRequestURI(fmt.Sprintf("%v/users/%v/playlists", domain.SpotifyBaseAPIURL, userID))
+func (s *spotify) GetUserPlaylist(accessToken string) (playlists domain.SpotifyPlaylists, err error) {
+	u, _ := url.ParseRequestURI(fmt.Sprintf("%v/me/playlists", domain.SpotifyBaseAPIURL))
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
