@@ -34,6 +34,8 @@ export const useSpotifyAction = () => {
 	};
 
 	const getPlaylistTracks = async (playlistId: string): Promise<void> => {
+		if (spotify.tracks[playlistId]) return;
+
 		const tokens = getAccessTokens();
 		if (!tokens) {
 			window.location.href = `${BASE_API_URL}/oauth/login`;

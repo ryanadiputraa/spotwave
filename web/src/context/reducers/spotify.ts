@@ -12,6 +12,7 @@ export const spotifyReducer = (state: SpotifyState, action: SpotifyAction) => {
 			return {
 				...state,
 				tracks: {
+					...state.tracks,
 					[action.playlistId]: action.tracks,
 				},
 			};
