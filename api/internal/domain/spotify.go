@@ -23,18 +23,39 @@ type SpotifyImageURL struct {
 }
 
 type SpotifyPlaylists struct {
-	Items    []SpotifyPlaylistItem `json:"items"`
-	Limit    int                   `json:"limit"`
-	Next     int                   `json:"next"`
-	Offset   int                   `json:"offset"`
-	Previous int                   `json:"previous"`
-	Total    int                   `json:"total"`
+	Items  []SpotifyPlaylistItem `json:"items"`
+	Limit  int                   `json:"limit"`
+	Offset int                   `json:"offset"`
+	Total  int                   `json:"total"`
 }
 
 type SpotifyPlaylistItem struct {
 	ID     string            `json:"id"`
 	Images []SpotifyImageURL `json:"images"`
 	Name   string            `json:"name"`
+}
+
+type SpotifyPlaylistTracks struct {
+	Items  []SpotifyPlaylistTrackItem `json:"items"`
+	Limit  int                        `json:"limit"`
+	Offset int                        `json:"offset"`
+	Total  int                        `json:"total"`
+}
+
+type SpotifyPlaylistTrackItem struct {
+	Track SpotifyTrack `json:"track"`
+}
+
+type SpotifyTrack struct {
+	ID         string          `json:"id"`
+	Name       string          `json:"name"`
+	DurationMS int             `json:"duration_ms"`
+	Artist     []SpotifyArtist `json:"artists"`
+}
+
+type SpotifyArtist struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type SpotifyAccessTokens struct {

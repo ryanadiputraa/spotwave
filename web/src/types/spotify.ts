@@ -18,3 +18,26 @@ export interface PlaylistItem {
 	images: ImageURL[];
 	name: string;
 }
+
+export interface PlaylistTracks {
+	items: PlaylistItem[];
+	limit: number;
+	offset: number;
+	total: number;
+}
+
+export interface PlaylistItem {
+	track: Track;
+}
+
+export interface Track {
+	id: string;
+	name: string;
+	duration_ms: number;
+	artists: Artist[];
+}
+
+export interface Artist {
+	id: string;
+	name: string;
+}

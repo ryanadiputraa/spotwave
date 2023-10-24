@@ -22,6 +22,7 @@ func NewController(group fiber.Router, config *config.Config, service spotify.Us
 	}
 	group.Get("/users", c.GetUserInfo)
 	group.Get("/playlists", c.GetUserPlaylists)
+	group.Get("/playlists/tracks", c.GetPlaylistTracks)
 }
 
 func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
@@ -75,5 +76,34 @@ func (c *controller) GetUserPlaylists(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "fetch spotify user playlists",
 		"data":    user,
+	})
+}
+
+func (c *controller) GetPlaylistTracks(ctx *fiber.Ctx) error {
+	context := ctx.Context()
+	headers := ctx.GetReqHeaders()
+	accessToken := headers["Authorization"]
+	m := ctx.Queries()
+	playlistID := m["playlist_id"]
+
+	tracks, err := c.service.GetPlaylistTracks(context, accessToken, playlistID)
+	if err != nil {
+		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
+			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)
+			return ctx.Status(spotifyErr.ErrorDetail.Status).JSON(fiber.Map{
+				"error":   domain.ErrBadRequest,
+				"message": spotifyErr.ErrorDetail.Message,
+			})
+		}
+		slog.Warn("fail to get playlist tracks: " + err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   domain.ErrBadRequest,
+			"message": "fail to get playlist tracks",
+		})
+	}
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "fetch spotify playlist tracks",
+		"data":    tracks,
 	})
 }

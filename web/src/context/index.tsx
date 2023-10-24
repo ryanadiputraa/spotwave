@@ -13,6 +13,7 @@ const initialState: IInitialState = {
 	},
 	spotify: {
 		playlists: null,
+		tracks: {},
 	},
 };
 

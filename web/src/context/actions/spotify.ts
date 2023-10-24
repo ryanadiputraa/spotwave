@@ -3,10 +3,10 @@ import { useContext } from 'react';
 import { AppContext } from '..';
 import { SuccessResponse } from '../../types/api';
 import { BASE_API_URL, getAccessTokens } from '../../utils';
-import { Playlists } from '../../types/spotify';
+import { PlaylistTracks, Playlists, Track } from '../../types/spotify';
 
 export const useSpotifyAction = () => {
-	const { spotifyDispatch } = useContext(AppContext);
+	const { spotify, spotifyDispatch } = useContext(AppContext);
 
 	const getUserPlaylists = async (): Promise<void> => {
 		const tokens = getAccessTokens();
@@ -33,7 +33,36 @@ export const useSpotifyAction = () => {
 		}
 	};
 
+	const getPlaylistTracks = async (playlistId: string): Promise<void> => {
+		const tokens = getAccessTokens();
+		if (!tokens) {
+			window.location.href = `${BASE_API_URL}/oauth/login`;
+			return;
+		}
+		try {
+			if (spotify.tracks[playlistId]) return;
+			const resp = await fetch(`${BASE_API_URL}/api/spotify/playlists/tracks?playlist_id=${playlistId}`, {
+				headers: {
+					Authorization: `Bearer ${tokens.accessToken}`,
+				},
+			});
+
+			if (!resp.ok) {
+				console.error(resp);
+				return;
+			}
+
+			const json: SuccessResponse<PlaylistTracks> = await resp.json();
+			let tracks: Track[] = [];
+			json.data.items.map((item) => tracks.push(item.track));
+			spotifyDispatch({ type: 'SET_PLAYLIST_TRACKS', playlistId: playlistId, tracks: tracks });
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return {
 		getUserPlaylists,
+		getPlaylistTracks,
 	};
 };

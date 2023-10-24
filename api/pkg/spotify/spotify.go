@@ -19,6 +19,7 @@ type SpotifyUtil interface {
 	RefreshToken(clientID, clientSecret, refreshToken string) (domain.SpotifyRefreshTokens, error)
 	GetUserInfo(accessToken string) (domain.SpotifyUser, error)
 	GetUserPlaylist(accessToken string) (playlists domain.SpotifyPlaylists, err error)
+	GetPlaylistTracks(accessToken, playlistID string) (trakcs domain.SpotifyPlaylistTracks, err error)
 }
 
 type spotify struct{}
@@ -186,6 +187,40 @@ func (s *spotify) GetUserPlaylist(accessToken string) (playlists domain.SpotifyP
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&playlists)
+	if err != nil {
+		slog.Error("decode: ", err.Error())
+	}
+	return
+}
+
+func (s *spotify) GetPlaylistTracks(accessToken, playlistID string) (tracks domain.SpotifyPlaylistTracks, err error) {
+	u, _ := url.ParseRequestURI(fmt.Sprintf("%v/playlists/%v/tracks", domain.SpotifyBaseAPIURL, playlistID))
+
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		slog.Error("http req: ", err.Error())
+		return
+	}
+	req.Header.Set("Authorization", accessToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("exec http req: ", err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var reqErr domain.SpotifyError
+		if err = json.NewDecoder(resp.Body).Decode(&reqErr); err != nil {
+			slog.Error("decode resp body: ", err.Error())
+			return
+		}
+		return tracks, &reqErr
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&tracks)
 	if err != nil {
 		slog.Error("decode: ", err.Error())
 	}
