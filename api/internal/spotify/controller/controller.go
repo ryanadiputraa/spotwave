@@ -116,8 +116,14 @@ func (c *controller) DownloadSpotifyTrack(ctx *fiber.Ctx) error {
 	artists := m["artists"]
 	title := m["title"]
 
+	if artists == "" || title == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   domain.ErrBadRequest,
+			"message": "invalid params, 'artists' & 'title' required",
+		})
+	}
+
 	link, err := c.service.DownloadTrack(context, artists, title)
-	slog.Error("err: ", err)
 	if err != nil {
 		if rapidAPIErr, ok := err.(*rapidapi.ErrorResponse); ok {
 			slog.Warn("rapid api error: " + rapidAPIErr.ErrorMessage)
@@ -134,7 +140,7 @@ func (c *controller) DownloadSpotifyTrack(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "track downloaded",
+		"message": "track converted to mp3, visit link to donwload",
 		"data": fiber.Map{
 			"link": link,
 		},

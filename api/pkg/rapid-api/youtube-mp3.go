@@ -45,7 +45,7 @@ func (e ErrorResponse) Error() string {
 func (r *rapidAPI) DownloadYoutubeMP3(videoID string) (MP3Data, error) {
 	url := fmt.Sprintf("%v?id=%v", BaseURL, videoID)
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return MP3Data{}, err
 	}

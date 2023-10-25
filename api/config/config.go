@@ -6,13 +6,18 @@ import (
 
 type Config struct {
 	*Server
+	*Google
 	*Spotify
 	*RapidAPI
 }
 
 type Server struct {
-	Port   string `mapstructure:"PORT"`
+	Port   string `mapstructure:"port"`
 	WebURL string `mapstructure:"webUrl"`
+}
+
+type Google struct {
+	APIKey string `mapstructure:"apiKey"`
 }
 
 type Spotify struct {

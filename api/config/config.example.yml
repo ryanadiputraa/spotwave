@@ -2,6 +2,9 @@ server:
   port: ':8080'
   webUrl: 'http://localhost:3000/auth'
 
+google:
+  apiKey: ''
+
 spotify:
   clientId: ''
   clientSecret: ''
