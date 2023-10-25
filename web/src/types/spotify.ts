@@ -41,3 +41,7 @@ export interface Artist {
 	id: string;
 	name: string;
 }
+
+export interface DownloadLink {
+	link: string;
+}

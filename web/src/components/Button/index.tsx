@@ -28,7 +28,10 @@ export const Button = ({ children, variant = 'primary', classNames, onClick = ()
 	}, []);
 
 	return (
-		<button className={`px-4 py-2 rounded-md active:scale-95 ${classVariants} ${classNames}`} onClick={onClick}>
+		<button
+			className={`px-4 py-2 rounded-md active:scale-95 ${classVariants} ${classNames}`}
+			onClick={(e) => onClick(e)}
+		>
 			{children}
 		</button>
 	);

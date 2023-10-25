@@ -42,10 +42,10 @@ const Dashboard = () => {
 						</Button>
 						<div className="mt-4 w-full flex flex-col gap-2">
 							<div className="flex items-center gap-1 w-full p-2 sm:px-8 font-bold border-b-2 border-gray-500 border-solid">
-								<span className="text-xs sm:text-sm w-[5%]">#</span>
-								<span className="flex flex-col gap-1 w-[65%]">Track</span>
-								<span className="hidden sm:inline-block w-[10%] text-center">Duration</span>
-								<span className="w-[20%] text-right">Action</span>
+								<span className="text-xs sm:text-sm w-[10%] sm:w-[5%] text-center sm:text-left">#</span>
+								<span className="flex flex-col gap-1 w-[50%] sm:w-[65%]">Track</span>
+								<span className="hidden sm:inline-block w-[15%] text-center">Duration</span>
+								<span className="w-[40%] sm:w-[15%] text-center">Action</span>
 							</div>
 							{spotify.tracks[selectedPlaylist.id]?.map((track, i) => (
 								<TrackCard key={track.id} num={i + 1} track={track} />

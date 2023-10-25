@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { AppContext } from '..';
 import { SuccessResponse } from '../../types/api';
 import { BASE_API_URL, getAccessTokens } from '../../utils';
-import { PlaylistTracks, Playlists, Track } from '../../types/spotify';
+import { DownloadLink, PlaylistTracks, Playlists, Track } from '../../types/spotify';
 
 export const useSpotifyAction = () => {
 	const { spotify, spotifyDispatch } = useContext(AppContext);
