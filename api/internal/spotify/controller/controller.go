@@ -7,6 +7,7 @@ import (
 	"github.com/ryanadiputraa/spotwave/api/config"
 	"github.com/ryanadiputraa/spotwave/api/internal/domain"
 	"github.com/ryanadiputraa/spotwave/api/internal/spotify"
+	rapidapi "github.com/ryanadiputraa/spotwave/api/pkg/rapid-api"
 	"github.com/sagikazarmark/slog-shim"
 )
 
@@ -23,6 +24,7 @@ func NewController(group fiber.Router, config *config.Config, service spotify.Us
 	group.Get("/users", c.GetUserInfo)
 	group.Get("/playlists", c.GetUserPlaylists)
 	group.Get("/playlists/tracks", c.GetPlaylistTracks)
+	group.Get("/tracks/download", c.DownloadSpotifyTrack)
 }
 
 func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
@@ -105,5 +107,36 @@ func (c *controller) GetPlaylistTracks(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "fetch spotify playlist tracks",
 		"data":    tracks,
+	})
+}
+
+func (c *controller) DownloadSpotifyTrack(ctx *fiber.Ctx) error {
+	context := ctx.Context()
+	m := ctx.Queries()
+	artists := m["artists"]
+	title := m["title"]
+
+	link, err := c.service.DownloadTrack(context, artists, title)
+	slog.Error("err: ", err)
+	if err != nil {
+		if rapidAPIErr, ok := err.(*rapidapi.ErrorResponse); ok {
+			slog.Warn("rapid api error: " + rapidAPIErr.ErrorMessage)
+			return ctx.Status(rapidAPIErr.Code).JSON(fiber.Map{
+				"error":   domain.ErrBadRequest,
+				"message": rapidAPIErr.Message,
+			})
+		}
+		slog.Warn("fail to download track: " + err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   domain.ErrBadRequest,
+			"message": "fail to download track",
+		})
+	}
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "track downloaded",
+		"data": fiber.Map{
+			"link": link,
+		},
 	})
 }

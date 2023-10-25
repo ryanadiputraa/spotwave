@@ -7,3 +7,6 @@ spotify:
   clientSecret: ''
   state: ''
   redirectUri: 'http://localhost:8080/oauth/callback'
+
+rapidApi:
+  apiKey: ''

@@ -7,6 +7,7 @@ import (
 type Config struct {
 	*Server
 	*Spotify
+	*RapidAPI
 }
 
 type Server struct {
@@ -15,10 +16,14 @@ type Server struct {
 }
 
 type Spotify struct {
-	ClientID     string `mapstrcture:"clientId"`
-	ClientSecret string `mapstrcture:"clientSecret"`
-	State        string `mapstrcture:"state"`
-	RedirectURI  string `mapstrcture:"redirectUri"`
+	ClientID     string `mapstructure:"clientId"`
+	ClientSecret string `mapstructure:"clientSecret"`
+	State        string `mapstructure:"state"`
+	RedirectURI  string `mapstructure:"redirectUri"`
+}
+
+type RapidAPI struct {
+	APIKey string `mapstructure:"apiKey"`
 }
 
 func LoadConfig(path string) (config *Config, err error) {
