@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { AppProvider } from './context';
 import { Loading } from './components/Loading';
+import { Toast } from './components/Toast';
 
 const Home = lazy(() => import('./pages/Home'));
 const Auth = lazy(() => import('./pages/Auth'));
@@ -20,6 +21,7 @@ const App = () => {
 						{/* TODO: 404 page */}
 					</Routes>
 				</Router>
+				<Toast />
 			</AppProvider>
 		</Suspense>
 	);

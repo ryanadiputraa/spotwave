@@ -10,6 +10,11 @@ interface IInitialState {
 const initialState: IInitialState = {
 	main: {
 		user: null,
+		toast: {
+			isOpen: false,
+			type: 'success',
+			message: '',
+		},
 	},
 	spotify: {
 		playlists: null,
