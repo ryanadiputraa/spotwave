@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { BASE_API_URL, getAccessTokens } from '../../utils';
 
-const Home = () => {
+const NotFound = () => {
 	const navigate = useNavigate();
 	const tokens = getAccessTokens();
 
@@ -26,21 +26,12 @@ const Home = () => {
 					{tokens && tokens.accessToken.length ? 'Dashboard' : 'Login'}
 				</Button>
 			</header>
-			<main className="mt-56 px-[2%]">
-				<section id="main" className="flex justify-center items-center flex-col">
-					<h1 className="font-bold text-3xl sm:text-6xl sm:w-[60%] text-center">
-						Download your Spotify playlist in just few clicks!
-					</h1>
-					<p className="mt-4 text-center">
-						Sign in to your spotify account, and chose songs in your playlist to download!
-					</p>
-					<Button variant="primary" classNames="px-8 py-3 mt-8" onClick={onLogin}>
-						Download Now!
-					</Button>
-				</section>
-			</main>
+			<div className="flex flex-col items-center mt-40">
+				<img className="w-3/4 sm:w-80" src="/not-found.svg" alt="not found" />
+				<p className="font-bold text-xl text-center">This is not the web page you are looking for.</p>
+			</div>
 		</div>
 	);
 };
 
-export default Home;
+export default NotFound;

@@ -8,6 +8,7 @@ import { Toast } from './components/Toast';
 const Home = lazy(() => import('./pages/Home'));
 const Auth = lazy(() => import('./pages/Auth'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App = () => {
 	return (
@@ -18,7 +19,7 @@ const App = () => {
 						<Route path="/" element={<Home />} />
 						<Route path="/auth" element={<Auth />} />
 						<Route path="/dashboard" element={<Dashboard />} />
-						{/* TODO: 404 page */}
+						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</Router>
 				<Toast />
