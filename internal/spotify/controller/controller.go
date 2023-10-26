@@ -32,7 +32,14 @@ func (c *controller) GetUserInfo(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	accessToken := headers["Authorization"]
 
-	user, err := c.service.GetUserInfo(context, accessToken)
+	if len(accessToken) == 0 {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"error":   domain.ErrUnauthorized,
+			"message": "misisng authorization header",
+		})
+	}
+
+	user, err := c.service.GetUserInfo(context, accessToken[0])
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
 			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)
@@ -59,7 +66,14 @@ func (c *controller) GetUserPlaylists(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	accessToken := headers["Authorization"]
 
-	user, err := c.service.GetUserPlaylists(context, accessToken)
+	if len(accessToken) == 0 {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"error":   domain.ErrUnauthorized,
+			"message": "misisng authorization header",
+		})
+	}
+
+	user, err := c.service.GetUserPlaylists(context, accessToken[0])
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
 			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)
@@ -85,10 +99,17 @@ func (c *controller) GetPlaylistTracks(ctx *fiber.Ctx) error {
 	context := ctx.Context()
 	headers := ctx.GetReqHeaders()
 	accessToken := headers["Authorization"]
+
+	if len(accessToken) == 0 {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"error":   domain.ErrUnauthorized,
+			"message": "misisng authorization header",
+		})
+	}
 	m := ctx.Queries()
 	playlistID := m["playlist_id"]
 
-	tracks, err := c.service.GetPlaylistTracks(context, accessToken, playlistID)
+	tracks, err := c.service.GetPlaylistTracks(context, accessToken[0], playlistID)
 	if err != nil {
 		if spotifyErr, ok := err.(*domain.SpotifyError); ok {
 			slog.Warn("spotify error: " + spotifyErr.ErrorDetail.Message)
