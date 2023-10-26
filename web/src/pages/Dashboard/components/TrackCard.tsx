@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
+import { AppContext } from '../../../context';
 import { Button } from '../../../components/Button';
 import { DownloadLink, Track } from '../../../types/spotify';
 import { BASE_API_URL } from '../../../utils';
@@ -11,8 +12,10 @@ interface Props {
 }
 
 export const TrackCard = ({ track, num }: Props) => {
+	const { mainDispatch } = useContext(AppContext);
 	const [donwloadLink, setDownloadLink] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+
 	const seconds = Math.floor((track.duration_ms / 1000) % 60);
 	const minutes = Math.floor((track.duration_ms / (1000 * 60)) % 60);
 
@@ -24,14 +27,16 @@ export const TrackCard = ({ track, num }: Props) => {
 				`${BASE_API_URL}/api/spotify/tracks/download?artists=${encodeURI(artists)}&title=${encodeURI(track.name)}`
 			);
 			if (!resp.ok) {
-				console.error(resp);
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: 'Please try again later' });
 				return;
 			}
 
 			const json: SuccessResponse<DownloadLink> = await resp.json();
 			setDownloadLink(json.data.link);
 		} catch (error) {
-			console.error(error);
+			if (error instanceof Error) {
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: error.message });
+			}
 		} finally {
 			setIsLoading(false);
 		}

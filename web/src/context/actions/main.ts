@@ -30,7 +30,9 @@ export const useMainAction = () => {
 			});
 			window.location.reload();
 		} catch (error) {
-			console.error(error);
+			if (error instanceof Error) {
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: error.message });
+			}
 		}
 	};
 
@@ -55,7 +57,9 @@ export const useMainAction = () => {
 			const json: SuccessResponse<User> = await resp.json();
 			mainDispatch({ type: 'SET_USER', payload: json.data });
 		} catch (error) {
-			console.error(error);
+			if (error instanceof Error) {
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: error.message });
+			}
 		}
 	};
 

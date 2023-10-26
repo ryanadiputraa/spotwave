@@ -3,10 +3,10 @@ import { useContext } from 'react';
 import { AppContext } from '..';
 import { SuccessResponse } from '../../types/api';
 import { BASE_API_URL, getAccessTokens } from '../../utils';
-import { DownloadLink, PlaylistTracks, Playlists, Track } from '../../types/spotify';
+import { PlaylistTracks, Playlists, Track } from '../../types/spotify';
 
 export const useSpotifyAction = () => {
-	const { spotify, spotifyDispatch } = useContext(AppContext);
+	const { mainDispatch, spotify, spotifyDispatch } = useContext(AppContext);
 
 	const getUserPlaylists = async (): Promise<void> => {
 		const tokens = getAccessTokens();
@@ -22,14 +22,16 @@ export const useSpotifyAction = () => {
 			});
 
 			if (!resp.ok) {
-				console.error(resp);
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: 'Please try again later' });
 				return;
 			}
 
 			const json: SuccessResponse<Playlists> = await resp.json();
 			spotifyDispatch({ type: 'SET_PLAYLISTS', payload: json.data });
 		} catch (error) {
-			console.error(error);
+			if (error instanceof Error) {
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: error.message });
+			}
 		}
 	};
 
@@ -50,7 +52,7 @@ export const useSpotifyAction = () => {
 			});
 
 			if (!resp.ok) {
-				console.error(resp);
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: 'Please try again later' });
 				return;
 			}
 
@@ -59,7 +61,9 @@ export const useSpotifyAction = () => {
 			json.data.items.map((item) => tracks.push(item.track));
 			spotifyDispatch({ type: 'SET_PLAYLIST_TRACKS', playlistId: playlistId, tracks: tracks });
 		} catch (error) {
-			console.error(error);
+			if (error instanceof Error) {
+				mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: error.message });
+			}
 		}
 	};
 

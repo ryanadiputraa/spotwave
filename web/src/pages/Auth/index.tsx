@@ -1,15 +1,18 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+
+import { AppContext } from '../../context';
 import { AccessTokens } from '../../types/tokens';
 
 const Auth = () => {
+	const { mainDispatch } = useContext(AppContext);
 	const [params] = useSearchParams();
 	const navigate = useNavigate();
 
 	const catchError = (err: string) => {
-		// TODO: handle toast error
-		console.error(err);
+		mainDispatch({ type: 'TOGGLE_TOAST', isOpen: true, toastType: 'error', msg: err });
+		navigate('/');
 	};
 
 	const setAuthCookies = (tokens: AccessTokens) => {
