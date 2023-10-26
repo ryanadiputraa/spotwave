@@ -1,4 +1,4 @@
-FROM go:1.21.3-alpine
+FROM golang:1.21.3-alpine
 
 WORKDIR /app
 
@@ -6,6 +6,20 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN gp build -o api cmd/api.go
 
-CMD [ "api" ]
+RUN chmod +x ./cmd/config.sh
+
+ARG PORT
+ARG WEB_URL
+ARG GOOGLE_API_KEY
+ARG SPOTIFY_CLIENT_ID
+ARG SPOTIFY_CLIENT_SECRET
+ARG SPOTIFY_STATE
+ARG SPOTIFY_REDIRECT_URI
+ARG RAPID_API_KEY
+
+RUN sh cmd/config.sh ${PORT} ${WEB_URL} ${GOOGLE_API_KEY} ${SPOTIFY_CLIENT_ID} $SPOTIFY_CLIENT_SECRET ${SPOTIFY_STATE} ${SPOTIFY_REDIRECT_URI} ${RAPID_API_KEY}
+
+RUN go build -o api cmd/api.go
+
+CMD [ "./api" ]
