@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/ryanadiputraa/spotwave/api/config"
@@ -26,5 +28,5 @@ func (s *Server) Run() error {
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
 	s.mapHandlers()
-	return s.fiber.Listen(s.config.Port)
+	return s.fiber.Listen(fmt.Sprintf(":%v", s.config.Server.Port))
 }
