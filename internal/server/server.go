@@ -28,5 +28,5 @@ func (s *Server) Run() error {
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
 	s.mapHandlers()
-	return s.fiber.Listen(fmt.Sprintf(":%v", s.config.Server.Port))
+	return s.fiber.Listen(fmt.Sprintf("0.0.0.0:%v", s.config.Server.Port))
 }
